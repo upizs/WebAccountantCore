@@ -9,7 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAccountantApp.Contracts;
 using WebAccountantApp.Data;
+using WebAccountantApp.Repository;
 
 namespace WebAccountantApp
 {
@@ -28,6 +30,10 @@ namespace WebAccountantApp
             services.AddDbContext<MyContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("Accounts")));
+
+            //References for Repositories and Contracts
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
 
             services.AddControllersWithViews();
         }

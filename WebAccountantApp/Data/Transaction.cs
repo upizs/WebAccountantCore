@@ -9,15 +9,18 @@ namespace WebAccountantApp.Data
     {
         [Key]
         public int Id { get; set; }
+        [Required]
         public int? DebitId { get; set; }
+        [Required]
         public int? CreditId { get; set; }
+        [Required]
         public double Value { get; set; }
-        [Column(TypeName = "datetime")]
+        [Required]
         public DateTime Date { get; set; }
 
         [ForeignKey(nameof(CreditId))]
-        public virtual Account Credit { get; set; }
+        public Account Credit { get; set; }
         [ForeignKey(nameof(DebitId))]
-        public virtual Account Debit { get; set; }
+        public Account Debit { get; set; }
     }
 }

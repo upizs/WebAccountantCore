@@ -9,12 +9,14 @@ namespace WebAccountantApp.Data
     {
         [Key]
         public int Id { get; set; }
-        [Column(TypeName = "datetime")]
+        [Required]
         public DateTime Date { get; set; }
+        [Required]
         public double Value { get; set; }
+        [Required]
         public int AccountId { get; set; }
 
         [ForeignKey(nameof(AccountId))]
-        public virtual Account Account { get; set; }
+        public Account Account { get; set; }
     }
 }

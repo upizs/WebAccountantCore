@@ -8,12 +8,16 @@ namespace WebAccountantApp.Data
     public partial class Account
     {
         
-
         [Key]
         public int Id { get; set; }
+        [Required]
+        [MaxLength(30)]
         public string Name { get; set; }
+        [Required]
         public double Value { get; set; }
-        public int AccountType { get; set; }
+        [Required]
+        [EnumDataType(typeof(AccountType))]
+        public AccountType AccountType { get; set; }
 
         
     }

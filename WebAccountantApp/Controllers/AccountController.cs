@@ -39,9 +39,9 @@ namespace WebAccountantApp.Controllers
 		// GET: AccountController/Create
 		public ActionResult Create()
 		{
-			var accountTypes = Enum.GetValues(typeof(AccountType)).Cast<AccountType>().ToList();
 			
-			return View();
+
+			return PartialView("_Create");
 		}
 
 		// POST: AccountController/Create

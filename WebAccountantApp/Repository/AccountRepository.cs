@@ -15,16 +15,16 @@ namespace WebAccountantApp.Repository
         {
             _db = db;
         }
-        public async Task Create(Account entity)
+        public async Task<bool> Create(Account entity)
         {
             await _db.Accounts.AddAsync(entity);
-            await Save();
+            return await Save();
         }
 
-        public async void Delete(Account entity)
+        public async Task<bool> Delete(Account entity)
         {
             _db.Accounts.Remove(entity);
-            await Save();
+            return await Save();
         }
 
         public async Task<bool> Exists(int id)
@@ -43,15 +43,16 @@ namespace WebAccountantApp.Repository
             return await _db.Accounts.FindAsync(id);
         }
 
-        public async Task Save()
+        public async Task<bool> Save()
         {
-            await _db.SaveChangesAsync();
+            var changes = await _db.SaveChangesAsync();
+            return changes > 0;
         }
 
-        public async void Update(Account entity)
+        public async Task<bool> Update(Account entity)
         {
             _db.Accounts.Update(entity);
-            await Save();
+            return await Save();
         }
     }
 }

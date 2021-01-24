@@ -15,6 +15,7 @@ namespace WebAccountantApp.ViewComponents
             var accountTypes = Enum.GetValues(typeof(AccountType)).Cast<AccountType>().ToList();
             var model = new CreateAccountVM 
             { 
+
                 AccountTypes = accountTypes
             };
             return View(model);

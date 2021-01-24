@@ -4,11 +4,9 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
 @await Component.InvokeAsync("CreateAccount")
 
-<table class="table">
+<table id="tblData" class=" table">
     <thead>
         <tr>
             <th>

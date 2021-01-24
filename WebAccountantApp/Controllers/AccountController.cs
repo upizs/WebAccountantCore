@@ -36,23 +36,19 @@ namespace WebAccountantApp.Controllers
 			return View(model);
 		}
 
-		// GET: AccountController/Create
-		public ActionResult Create()
-		{
-			
-
-			return PartialView("_Create");
-		}
 
 		// POST: AccountController/Create
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> Create(AccountVM account)
+		public async Task<ActionResult> Create(CreateAccountVM model)
 		{
 			try
 			{
+				
+				var account = model.Account;
+
 				var mappedAccount = _mapper.Map<Account>(account);
-				await _accountRepo.Create(mappedAccount);
+				var success = await _accountRepo.Create(mappedAccount);
 
 				return RedirectToAction(nameof(Index));
 			}
@@ -63,23 +59,35 @@ namespace WebAccountantApp.Controllers
 		}
 
 		// GET: AccountController/Edit/5
-		public ActionResult Edit(int id)
+		public async Task<ActionResult> Edit(int id)
 		{
-			return View();
+			var account = await _accountRepo.FindById(id);
+			var accountTypes = Enum.GetValues(typeof(AccountType)).Cast<AccountType>().ToList();
+			var mappedAccount = _mapper.Map<AccountVM>(account);
+			var model = new CreateAccountVM
+			{
+				Account = mappedAccount,
+				AccountTypes = accountTypes
+			};
+
+			return View(model);
 		}
 
 		// POST: AccountController/Edit/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(int id, IFormCollection collection)
+		public async Task<ActionResult> Edit(CreateAccountVM model)
 		{
 			try
 			{
+				var account = _mapper.Map<Account>(model.Account);
+				var success = await _accountRepo.Update(account);
+
 				return RedirectToAction(nameof(Index));
 			}
 			catch
 			{
-				return View();
+				return RedirectToAction(nameof(Index));
 			}
 		}
 

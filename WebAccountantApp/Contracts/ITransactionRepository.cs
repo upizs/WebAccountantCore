@@ -8,6 +8,6 @@ namespace WebAccountantApp.Contracts
 {
     public interface ITransactionRepository : IBaseRepository<Transaction>
     {
-
+        Task<IList<Transaction>> GetTransactionsInOrder();
     }
 }

@@ -21,6 +21,7 @@ namespace WebAccountantApp.Data
         public virtual DbSet<DateKeeper> DateKeepers { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
         public DbSet<WebAccountantApp.Models.AccountVM> AccountVM { get; set; }
+        public DbSet<WebAccountantApp.Models.TransactionVM> TransactionVM { get; set; }
 
     }
 }

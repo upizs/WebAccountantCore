@@ -91,24 +91,18 @@ namespace WebAccountantApp.Controllers
 			}
 		}
 
-		// GET: AccountController/Delete/5
-		public ActionResult Delete(int id)
-		{
-			return View();
-		}
-
-		// POST: AccountController/Delete/5
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Delete(int id, IFormCollection collection)
+		public async Task<ActionResult> Delete(int id)
 		{
 			try
 			{
+				var account = await _accountRepo.FindById(id);
+				var success = await _accountRepo.Delete(account);
+
 				return RedirectToAction(nameof(Index));
 			}
 			catch
 			{
-				return View();
+				return RedirectToAction(nameof(Index));
 			}
 		}
 	}

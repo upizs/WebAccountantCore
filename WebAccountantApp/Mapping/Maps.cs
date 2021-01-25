@@ -13,6 +13,7 @@ namespace WebAccountantApp.Mapping
         public Maps()
         {
             CreateMap<Account, AccountVM>().ReverseMap();
+            CreateMap<Transaction, TransactionVM>().ReverseMap();
         }
     }
 }

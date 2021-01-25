@@ -20,9 +20,9 @@ namespace WebAccountantApp.ViewComponents
             _accountRepo = accountRepo;
             _mapper = mapper;
         }
-        public IViewComponentResult Invoke()
+        public async Task<IViewComponentResult> InvokeAsync()
         {
-            var accounts = _accountRepo.FindAll();
+            var accounts = await _accountRepo.FindAll();
             var mappedAccounts = _mapper.Map<List<AccountVM>>(accounts);
             var model = new CreateTransactionVM
             {

@@ -35,7 +35,7 @@ namespace WebAccountantApp.Repository
 
         public async Task<IList<Transaction>> FindAll()
         {
-            return await _db.Transactions.Include("Accounts").ToListAsync();
+            return await _db.Transactions.Include(tran => tran.Debit).Include(tran => tran.Credit).ToListAsync();
         }
 
         public async Task<Transaction> FindById(int id)
@@ -45,7 +45,7 @@ namespace WebAccountantApp.Repository
 
         public async Task<IList<Transaction>> GetTransactionsInOrder()
         {
-            return await _db.Transactions.OrderByDescending(tran => tran.Date).ToListAsync();
+            return await _db.Transactions.OrderByDescending(tran => tran.Date).Include(tran => tran.Debit).Include(tran => tran.Credit).ToListAsync();
         }
 
         public async Task<bool> Save()

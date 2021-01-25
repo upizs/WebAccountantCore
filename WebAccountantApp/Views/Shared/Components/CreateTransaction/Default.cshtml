@@ -1,0 +1,62 @@
+﻿@model WebAccountantApp.Models.CreateTransactionVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+
+        <div class="col-sm">
+            <div class="form-group">
+                <label asp-for="Transaction.DebitId" class="control-label"></label>
+                <select asp-for="Transaction.DebitId" class="form-control" asp-items="ViewBag.DebitId">
+                    @foreach (var acc in Model.Accounts)
+                    {
+                        <option value="@acc.Id">@acc.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm">
+            <div class="form-group">
+                <label asp-for="Transaction.CreditId" class="control-label"></label>
+                <select asp-for="Transaction.CreditId" class="form-control" asp-items="ViewBag.CreditId">
+                    @foreach (var acc in Model.Accounts)
+                    {
+                        <option value="@acc.Id">@acc.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm">
+            <div class="form-group">
+                <label asp-for="Transaction.Value" class="control-label"></label>
+                <input asp-for="Transaction.Value" class="form-control" />
+                <span asp-validation-for="Transaction.Value" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-sm">
+            <hr class="invisible"/>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary btn-block" />
+            </div>
+        </div>
+
+        </div>
+</form>
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

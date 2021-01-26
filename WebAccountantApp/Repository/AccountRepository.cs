@@ -38,9 +38,10 @@ namespace WebAccountantApp.Repository
             return await _db.Accounts.ToListAsync();
         }
 
-        public async Task<Account> FindById(int id)
+        public async Task<Account> FindById(int? id)
         {
-            return await _db.Accounts.FindAsync(id);
+            return await _db.Accounts.SingleOrDefaultAsync(acc => acc.Id == id);
+
         }
 
         public async Task<bool> Save()

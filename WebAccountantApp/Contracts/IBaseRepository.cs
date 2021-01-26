@@ -8,7 +8,7 @@ namespace WebAccountantApp.Contracts
     public interface IBaseRepository<T> where T :class
     {
         Task<IList<T>> FindAll();
-        Task<T> FindById(int id);
+        Task<T> FindById(int? id);
         //changed return type to bool so that I can return it in other methods.
         //async void shouldnt be used because cant wait for complition and cant handle exceptions.
         Task<bool> Exists(int id);

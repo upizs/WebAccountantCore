@@ -38,15 +38,11 @@ namespace WebAccountantApp.Repository
             return await _db.Transactions.Include(tran => tran.Debit).Include(tran => tran.Credit).ToListAsync();
         }
 
-        public async Task<Transaction> FindById(int id)
+        public async Task<Transaction> FindById(int? id)
         {
-            return await _db.Transactions.FindAsync(id);
+            return await _db.Transactions.SingleOrDefaultAsync(tr => tr.Id == id);
         }
 
-        public async Task<IList<Transaction>> GetTransactionsInOrder()
-        {
-            return await _db.Transactions.OrderByDescending(tran => tran.Date).Include(tran => tran.Debit).Include(tran => tran.Credit).ToListAsync();
-        }
 
         public async Task<bool> Save()
         {

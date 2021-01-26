@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAccountantApp.Contracts;
+using WebAccountantApp.Data;
 using WebAccountantApp.Models;
 
 namespace WebAccountantApp.Controllers
@@ -29,53 +30,56 @@ namespace WebAccountantApp.Controllers
         // GET: TransactionController
         public async Task<ActionResult> Index()
         {
-            var transactions = await _transactionRepo.GetTransactionsInOrder();
-            var model = _mapper.Map<List<TransactionVM>>(transactions);
+            var transactions = await _transactionRepo.FindAll();
+            //set transaction in order so that the latest transaction shows first
+            var orderedTran = transactions.OrderByDescending(tran => tran.Date);
+            var model = _mapper.Map<List<TransactionVM>>(orderedTran);
 
             return View(model);
         }
 
-        // GET: TransactionController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+        
 
-        // POST: TransactionController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Add(CreateTransactionVM model)
         {
             try
             {
+                //Map and save transaction
+                var transaction = model.Transaction;
+                transaction.Date = DateTime.Now;
+                var mappedTransaction = _mapper.Map<Transaction>(transaction);
+                var success = await _transactionRepo.Create(mappedTransaction);
+
+                //Get and update account values
+                var accountDebited = await _accountRepo.FindById(transaction.DebitId);
+                var accountCredited = await _accountRepo.FindById(transaction.CreditId);
+
+                //Update Debited Account, Expense Accounts gain value when debited 
+                if (accountDebited.AccountType == AccountType.Debit || accountDebited.AccountType == AccountType.Expense)
+                    accountDebited.Value += transaction.Value;
+                //Credit account loose value if debited
+                else
+                    accountDebited.Value -= transaction.Value;
+
+                //Update Credited Account, Credit account gains value when credited and Income gains value.
+                if (accountCredited.AccountType == AccountType.Credit || accountCredited.AccountType == AccountType.Income)
+                    accountCredited.Value += transaction.Value;
+                else
+                    accountCredited.Value -= transaction.Value;
+
+                var success2 = await _accountRepo.Update(accountCredited);
+                var success3 = await _accountRepo.Update(accountDebited);
+
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
-            }
-        }
-
-        // GET: TransactionController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: TransactionController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
         }
+
+        //Since changes to transaction affects account balance, 
+        //it will be easier to just delete the transaction in case of mistak
 
         // GET: TransactionController/Delete/5
         public ActionResult Delete(int id)

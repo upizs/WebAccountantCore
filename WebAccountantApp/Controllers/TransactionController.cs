@@ -81,24 +81,40 @@ namespace WebAccountantApp.Controllers
         //Since changes to transaction affects account balance, 
         //it will be easier to just delete the transaction in case of mistak
 
-        // GET: TransactionController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
+        
         // POST: TransactionController/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> Delete(int id)
         {
             try
             {
+                //Map and save transaction
+                var transaction = await _transactionRepo.FindById(id);
+
+                //Get and update account values
+                var accountDebited = await _accountRepo.FindById(transaction.DebitId);
+                var accountCredited = await _accountRepo.FindById(transaction.CreditId);
+
+                //Reverse the impact on the accounts that the transaction had. 
+                if (accountDebited.AccountType == AccountType.Debit || accountDebited.AccountType == AccountType.Expense)
+                    accountDebited.Value -= transaction.Value;
+                else
+                    accountDebited.Value += transaction.Value;
+                if (accountCredited.AccountType == AccountType.Credit || accountCredited.AccountType == AccountType.Income)
+                    accountCredited.Value -= transaction.Value;
+                else
+                    accountCredited.Value += transaction.Value;
+
+                var success2 = await _accountRepo.Update(accountCredited);
+                var success3 = await _accountRepo.Update(accountDebited);
+
+                var success = await _transactionRepo.Delete(transaction);
+
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return RedirectToAction(nameof(Index));
             }
         }
     }

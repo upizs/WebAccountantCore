@@ -54,22 +54,9 @@ namespace WebAccountantApp.Controllers
                 var accountDebited = await _accountRepo.FindById(transaction.DebitId);
                 var accountCredited = await _accountRepo.FindById(transaction.CreditId);
 
-                //Update Debited Account, Expense Accounts gain value when debited 
-                if (accountDebited.AccountType == AccountType.Debit || accountDebited.AccountType == AccountType.Expense)
-                    accountDebited.Value += transaction.Value;
-                //Credit account loose value if debited
-                else
-                    accountDebited.Value -= transaction.Value;
+                var success2 = await UpdateAccounts(accountDebited, accountCredited, transaction.Value);
 
-                //Update Credited Account, Credit account gains value when credited and Income gains value.
-                if (accountCredited.AccountType == AccountType.Credit || accountCredited.AccountType == AccountType.Income)
-                    accountCredited.Value += transaction.Value;
-                else
-                    accountCredited.Value -= transaction.Value;
-
-                var success2 = await _accountRepo.Update(accountCredited);
-                var success3 = await _accountRepo.Update(accountDebited);
-
+                
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -82,8 +69,7 @@ namespace WebAccountantApp.Controllers
         //it will be easier to just delete the transaction in case of mistak
 
         
-        // POST: TransactionController/Delete/5
-        [HttpPost]
+        
         public async Task<ActionResult> Delete(int id)
         {
             try
@@ -95,18 +81,8 @@ namespace WebAccountantApp.Controllers
                 var accountDebited = await _accountRepo.FindById(transaction.DebitId);
                 var accountCredited = await _accountRepo.FindById(transaction.CreditId);
 
-                //Reverse the impact on the accounts that the transaction had. 
-                if (accountDebited.AccountType == AccountType.Debit || accountDebited.AccountType == AccountType.Expense)
-                    accountDebited.Value -= transaction.Value;
-                else
-                    accountDebited.Value += transaction.Value;
-                if (accountCredited.AccountType == AccountType.Credit || accountCredited.AccountType == AccountType.Income)
-                    accountCredited.Value -= transaction.Value;
-                else
-                    accountCredited.Value += transaction.Value;
-
-                var success2 = await _accountRepo.Update(accountCredited);
-                var success3 = await _accountRepo.Update(accountDebited);
+                //Reverse the impact on the accounts that the transaction had by putting in negative value
+                var success1 = await UpdateAccounts(accountDebited, accountCredited, -transaction.Value);
 
                 var success = await _transactionRepo.Delete(transaction);
 
@@ -116,6 +92,28 @@ namespace WebAccountantApp.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
+
         }
+
+        public async Task<bool> UpdateAccounts(Account accountDebited, Account accountCredited, double value)
+        {
+            if (accountDebited.AccountType == AccountType.Debit || accountDebited.AccountType == AccountType.Expense)
+                accountDebited.Value += value;
+            //Credit account loose value if debited
+            else
+                accountDebited.Value -= value;
+            var success = await _accountRepo.Update(accountDebited);
+
+            //Update Credited Account, Credit account gains value when credited and Income gains value.
+            if (accountCredited.AccountType == AccountType.Credit || accountCredited.AccountType == AccountType.Income)
+                accountCredited.Value += value;
+            else
+                accountCredited.Value -= value;
+
+            var success1 = await _accountRepo.Update(accountCredited);
+            
+            return (success && success1);
+
+        } 
     }
 }

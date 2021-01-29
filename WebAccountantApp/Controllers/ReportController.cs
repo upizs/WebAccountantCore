@@ -31,21 +31,23 @@ namespace WebAccountantApp.Controllers
         // GET: ReportController
         public async Task<ActionResult> Index()
         {
+            //Archive all transactions in months and years to create a report navigation bar
+            //The user then can view transactions by months and years
+            var archivedTransactions = await ArchiveTransactions();
+
+            //Get the list of all accounts for the view
+            var accounts = await _accountRepo.FindAll();
 
             //Get the date of the last Friday, because I am getting paid on fridays
             //and I would like my short term Reports to be from Friday to Thursday
             DateTime lastFridayDate = GetLastFriday();
 
-            //Archive all transactions in months and years to create a report navigation bar
-            //The user then can view transactions by months and years
-            //var archivedTransactions = ArchiveTransactions();
-
+            
             //Get all the transactions since last friday
             //This is for the weekly report, only available for this week for now
             var thisWeeksTransactions = await _transactionRepo.FilterTransacations(lastFridayDate);
 
-            //Get the list of all accounts for the view
-            var accounts = await _accountRepo.FindAll();
+            
 
             //Create this weeks reports 
             var thisWeeksExpenseReports = CreateReports(AccountType.Expense, thisWeeksTransactions, accounts);
@@ -58,13 +60,36 @@ namespace WebAccountantApp.Controllers
                 Accounts = accounts,
                 IncomeReports = thisWeeksIncomeReports,
                 ExpenseReports = thisWeeksExpenseReports,
-                //Archives = archivedTransactions
+                Archives = archivedTransactions
             };
-
 
 
             return View(reportViewModel);
         }
+
+        public async Task<ActionResult> MontlyReport(int year, int month)
+        {
+            var accounts = await _accountRepo.FindAll();
+            var archivedTransactions = await ArchiveTransactions();
+
+            var monthlyTransactions = await _transactionRepo.GetMontlyTransactions(month, year);
+
+            var monthlyExpenseReports = CreateReports(AccountType.Expense, monthlyTransactions, accounts);
+            var montlyIncomeReports = CreateReports(AccountType.Income, monthlyTransactions, accounts);
+
+            var reportViewModel = new ListReportVM()
+            {
+                Accounts = accounts,
+                IncomeReports = montlyIncomeReports,
+                ExpenseReports = monthlyExpenseReports,
+                Archives = archivedTransactions
+
+            };
+
+            //use the same view as no need for different
+            return View(nameof(Index), reportViewModel);
+        }
+
 
         private List<ReportVM> CreateReports(AccountType accountType, IList<Transaction> transactions, IList<Account> accounts)
         {
@@ -97,9 +122,26 @@ namespace WebAccountantApp.Controllers
 
         
 
-        private object ArchiveTransactions()
+        private async Task<List<ArchiveEntry>> ArchiveTransactions()
         {
-            throw new NotImplementedException();
+            var transactions = await _transactionRepo.FindAll();
+                
+            var archived = transactions.GroupBy(x => new
+            {
+                Month = x.Date.Month,
+                Year = x.Date.Year
+            })
+                //create new archive entry for each group
+                .Select(o => new ArchiveEntry
+                {
+                    Month = o.Key.Month,
+                    Year = o.Key.Year
+                })
+                .OrderByDescending(a => a.Year)
+                .ThenByDescending(a => a.Month)
+                .ToList();
+
+            return archived;
         }
 
         private DateTime GetLastFriday()

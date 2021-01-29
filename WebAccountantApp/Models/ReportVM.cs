@@ -17,11 +17,12 @@ namespace WebAccountantApp.Models
         public double Value { get; set; }
     }
 
+    //A view model for a whole report page
     public class ListReportVM
     {
         public IEnumerable<ReportVM> IncomeReports { get; set; }
         public IEnumerable<ReportVM> ExpenseReports { get; set; }
-        //public IEnumerable<ArchiveEntry> Archives { get; set; }
+        public IEnumerable<ArchiveEntry> Archives { get; set; }
         public IEnumerable<Account> Accounts { get; set; }
 
         [DisplayName("Total Income")]
@@ -40,6 +41,7 @@ namespace WebAccountantApp.Models
                 return this.ExpenseReports.Select(x => x.Value).Sum();
             }
         }
+        //Whats left after taking all the expenses from same period income
         [DisplayName("Difference")]
         public double Diference
         {

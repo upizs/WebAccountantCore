@@ -9,5 +9,6 @@ namespace WebAccountantApp.Contracts
     public interface ITransactionRepository : IBaseRepository<Transaction>
     {
         Task<IList<Transaction>> FilterTransacations(DateTime date);
+        Task<IList<Transaction>> GetMontlyTransactions(int month, int year);
     }
 }

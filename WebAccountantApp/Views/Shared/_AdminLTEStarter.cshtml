@@ -62,7 +62,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                     <!-- Add icons to the links using the .nav-icon class
-                    with font-awesome or any other icon font library -->
+    with font-awesome or any other icon font library -->
                     <li class="nav-item">
                         <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">
                             <i class="nav-icon fas fa-home"></i>
@@ -82,6 +82,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </li>
                     <li class="nav-item">
                         <a asp-area="" asp-controller="Transaction" asp-action="Index" class="nav-link">
+                            <i class="nav-icon fas fa-book-open"></i>
+                            <p>
+                                Transactions
+                            </p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="Report" asp-action="Index" class="nav-link">
                             <i class="nav-icon fas fa-book-open"></i>
                             <p>
                                 Transactions

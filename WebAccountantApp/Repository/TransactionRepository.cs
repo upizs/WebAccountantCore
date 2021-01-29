@@ -33,6 +33,12 @@ namespace WebAccountantApp.Repository
             return exist;
         }
 
+        public async Task<IList<Transaction>> FilterTransacations(DateTime date)
+        {
+            var selectedTransactions = await _db.Transactions.Where(x => x.Date >= date).ToListAsync();
+            return selectedTransactions;
+        }
+
         public async Task<IList<Transaction>> FindAll()
         {
             return await _db.Transactions.Include(tran => tran.Debit).Include(tran => tran.Credit).ToListAsync();

@@ -1,0 +1,67 @@
+﻿
+@model WebAccountantApp.Models.ListReportVM
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div>
+    @if (Model != null)
+    {
+        <table class="table">
+
+
+            <tbody>
+                <tr class="income">
+                    <td>@Html.DisplayNameFor(e => e.IncomeSum)</td>
+                    <td>@Model.IncomeSum</td>
+                </tr>
+                <tr class="expense">
+                    <td><b>@Html.DisplayNameFor(e => e.ExpenseSum)</b></td>
+                    <td>@Model.ExpenseSum</td>
+                </tr>
+                <tr class="@(Model.Diference < 0 ? "bg-danger" : "bg-success" ) ">
+                    <td><b>@Html.DisplayNameFor(e => e.Diference)</b></td>
+                    <td>@Model.Diference</td>
+                </tr>
+
+            </tbody>
+
+
+
+        </table>
+    }
+</div>
+
+<div>
+
+    <hr />
+    @if (Model != null)
+    {
+        <table id="tblData" class="table">
+
+            <thead>
+                <tr>
+                    <td><b>@Html.DisplayNameFor(e => e.IncomeReports.Single().Account)</b></td>
+                    <td><b>@Html.DisplayNameFor(e => e.IncomeReports.Single().Value)</b> </td>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var report in Model.ExpenseReports)
+                {
+                    <tr>
+                        <td>@report.Account.Name</td>
+                        <td>@report.Value </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+    }
+</div>
+

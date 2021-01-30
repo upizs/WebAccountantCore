@@ -14,6 +14,7 @@ using WebAccountantApp.Contracts;
 using WebAccountantApp.Data;
 using WebAccountantApp.Mapping;
 using WebAccountantApp.Repository;
+using WebAccountantApp.BusinessLogic;
 
 namespace WebAccountantApp
 {
@@ -36,6 +37,7 @@ namespace WebAccountantApp
             //References for Repositories and Contracts
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<IDateKeeper, DateKeeperRepository>();
 
             services.AddAutoMapper(typeof(Maps));
 
@@ -43,7 +45,10 @@ namespace WebAccountantApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(
+            IApplicationBuilder app, 
+            IWebHostEnvironment env,
+            IDateKeeper dateKeeper)
         {
             if (env.IsDevelopment())
             {
@@ -61,6 +66,8 @@ namespace WebAccountantApp
             app.UseRouting();
 
             app.UseAuthorization();
+
+            RecordBalancaData.CheckDate(dateKeeper);
 
             app.UseEndpoints(endpoints =>
             {

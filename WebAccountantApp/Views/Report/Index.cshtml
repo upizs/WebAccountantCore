@@ -5,18 +5,19 @@
     ViewBag.Title = "Index";
 }
 
+
 @if (Model.Archives != null)
 {
-    <nav class="navbar navbar-default">
-
-        <ul class="nav navbar-nav">
-
-            <li>@Html.ActionLink("This Week", "Index", "Report")</li>
-
+    <nav class="navbar navbar-expand navbar-white navbar-light">
+        @*Left navbar links*@
+        <ul class="navbar-nav">
+            <li class="nav-item d-none d-sm-inline-block">
+                <a class="nav-link" asp-action="Index"> This Week</a>
+            </li>
             @foreach (var group in Model.Archives.GroupBy(m => m.Year))
             {
-                <li class="dropwdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <li class="nav-item dropwdown d-none d-sm-inline-block ">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
                         @group.Key
                         <span class="caret"></span>
                     </a>
@@ -24,86 +25,78 @@
                     <ul class="dropdown-menu">
                         @foreach (var item in group)
                         {
-                            <li>
-                                @Html.RouteLink(
-                                               string.Format("{0}", item.MonthName),
-                                               "",
-                                               new
-                                                   {
-                                                       controller = "Report",
-                                                       action = "MontlyReport",
-                                                       year = item.Year,
-                                                       month = item.Month
-                                                   })
-                            </li>
-                        }
+                            <li class="dropdown-item">
+                                <a class="nav-link" asp-action="MontlyReport" asp-route-year="
+                               @item.Year" asp-route-month="@item.Month">@item.MonthName</a>
+
+                        </li>
+                    }
                     </ul>
                 </li>
             }
+
+
         </ul>
-
-
-
     </nav>
 }
 
 
-    <div>
-        @if (Model != null)
-        {
-            <table class="table">
+<div>
+    @if (Model != null)
+    {
+        <table class="table">
 
 
-                <tbody>
-                    <tr class="income">
-                        <td>@Html.DisplayNameFor(e => e.IncomeSum)</td>
-                        <td>@Model.IncomeSum</td>
-                    </tr>
-                    <tr class="expense">
-                        <td><b>@Html.DisplayNameFor(e => e.ExpenseSum)</b></td>
-                        <td>@Model.ExpenseSum</td>
-                    </tr>
-                    <tr class="@(Model.Diference < 0 ? "bg-danger" : "bg-success" ) ">
-                        <td><b>@Html.DisplayNameFor(e => e.Diference)</b></td>
-                        <td>@Model.Diference</td>
-                    </tr>
+            <tbody>
+                <tr class="income">
+                    <td>@Html.DisplayNameFor(e => e.IncomeSum)</td>
+                    <td>@Model.IncomeSum</td>
+                </tr>
+                <tr class="expense">
+                    <td><b>@Html.DisplayNameFor(e => e.ExpenseSum)</b></td>
+                    <td>@Model.ExpenseSum</td>
+                </tr>
+                <tr class="@(Model.Diference < 0 ? "bg-danger" : "bg-success" ) ">
+                    <td><b>@Html.DisplayNameFor(e => e.Diference)</b></td>
+                    <td>@Model.Diference</td>
+                </tr>
 
-                </tbody>
+            </tbody>
 
 
 
-            </table>
-        }
-    </div>
+        </table>
+    }
+</div>
 
-    <div>
+<div>
 
-        <hr />
-        @if (Model != null)
-        {
-            <table id="tblData" class="table">
+    <hr />
+    @if (Model != null)
+    {
+        <table id="tblData" class="table">
 
-                <thead>
+            <thead>
+                <tr>
+                    <td><b>@Html.DisplayNameFor(e => e.IncomeReports.Single().Account)</b></td>
+                    <td><b>@Html.DisplayNameFor(e => e.IncomeReports.Single().Value)</b> </td>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var report in Model.ExpenseReports)
+                {
                     <tr>
-                        <td><b>@Html.DisplayNameFor(e => e.IncomeReports.Single().Account)</b></td>
-                        <td><b>@Html.DisplayNameFor(e => e.IncomeReports.Single().Value)</b> </td>
+                        <td>@report.Account.Name</td>
+                        <td>@report.Value </td>
+
                     </tr>
-                </thead>
+                }
 
-                <tbody>
+            </tbody>
 
-                    @foreach (var report in Model.ExpenseReports)
-                    {
-                        <tr>
-                            <td>@report.Account.Name</td>
-                            <td>@report.Value </td>
-
-                        </tr>
-                    }
-
-                </tbody>
-
-            </table>
-        }
-    </div>
+        </table>
+    }
+</div>
 

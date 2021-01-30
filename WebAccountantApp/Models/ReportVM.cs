@@ -30,7 +30,7 @@ namespace WebAccountantApp.Models
         {
             get
             {
-                return this.IncomeReports.Select(x => x.Value).Sum();
+                return Math.Round(this.IncomeReports.Select(x => x.Value).Sum(),2);
             }
         }
         [DisplayName("Total Expense")]
@@ -38,7 +38,7 @@ namespace WebAccountantApp.Models
         {
             get
             {
-                return this.ExpenseReports.Select(x => x.Value).Sum();
+                return Math.Round(this.ExpenseReports.Select(x => x.Value).Sum(),2);
             }
         }
         //Whats left after taking all the expenses from same period income

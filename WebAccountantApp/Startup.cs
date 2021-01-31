@@ -38,6 +38,8 @@ namespace WebAccountantApp
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<IDateKeeper, DateKeeperRepository>();
+            services.AddScoped<IBalanceReport, BalanceReportRepository>();
+
 
             services.AddAutoMapper(typeof(Maps));
 
@@ -48,7 +50,9 @@ namespace WebAccountantApp
         public void Configure(
             IApplicationBuilder app, 
             IWebHostEnvironment env,
-            IDateKeeper dateKeeper)
+            IDateKeeper dateKeeper,
+            IBalanceReport balanceRepo,
+            IAccountRepository accountRepo)
         {
             if (env.IsDevelopment())
             {
@@ -67,7 +71,7 @@ namespace WebAccountantApp
 
             app.UseAuthorization();
 
-            RecordBalancaData.CheckDate(dateKeeper);
+            RecordBalancaData.CheckDate(dateKeeper, balanceRepo, accountRepo);
 
             app.UseEndpoints(endpoints =>
             {

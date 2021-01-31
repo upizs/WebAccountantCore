@@ -9,36 +9,60 @@ namespace WebAccountantApp.BusinessLogic
 {
     public static class RecordBalancaData
     {
-        public async static void CheckDate(IDateKeeper dateKeeper)
+        //Had to use .Result because was having an "Disposed Object" error. 
+        public static void CheckDate(IDateKeeper dateKeeper, IBalanceReport balanceRepo, IAccountRepository accountRepo)
         {
             bool success;
-            var exist = await dateKeeper.Exists(1);
+            var exist = dateKeeper.Exists(1).Result;
             var todaysDate = DateTime.Now.Date;
-            if (!exist)
-            {
-                var lastVisit = new DateKeeper
-                {
-                    LastStarted = todaysDate
-                };
 
-                success = await dateKeeper.Create(lastVisit);
-            }
+            if (!exist)
+                success = CreateDateKeeper(dateKeeper, todaysDate);
+
             else
             {
-                //Had to use Result because otherwise the connection would close, will inspect this closer later
+                
                 var lastVisit = dateKeeper.FindById(1).Result;
-                if (lastVisit.LastStarted.GetValueOrDefault().Month == todaysDate.Month)
+                //if the month has changed since last record, Make new record and update date. 
+                if(lastVisit.LastStarted.GetValueOrDefault().Month != todaysDate.Month)
                 {
-                    lastVisit.LastStarted = todaysDate;
-                    await dateKeeper.Update(lastVisit);
-                }
-                //This is where I call RecordBalanceData method
-                else
-                {
+                    success = RecordBalance(balanceRepo, accountRepo).Result;
+                    success = dateKeeper.Update(lastVisit).Result;
 
                 }
 
             }
+        }
+
+        //Create a new entry for DateKeeper if doesnt exist
+        public static bool CreateDateKeeper(IDateKeeper dateKeeper, DateTime todaysDate)
+        {
+            
+            var lastVisit = new DateKeeper
+            {
+                LastStarted = todaysDate
+            };
+            return dateKeeper.Create(lastVisit).Result;
+        }
+
+        //Record the state of all accounts if the month has changed
+        public async static Task<bool> RecordBalance(IBalanceReport balanceRepo, IAccountRepository accountRepo)
+        {
+            //created a variable to keep async bool returns, set it to false just in case the code doesnt work, will return false
+            bool success = false;
+            var accounts = await accountRepo.GetDebitAndCredit();
+            foreach (var acc in accounts)
+            {
+                var balanceReport = new BalanceReport
+                {
+                    AccountId = acc.Id,
+                    Date = DateTime.Now.Date,
+                    Value = acc.Value
+                };
+                success = await balanceRepo.Create(balanceReport);
+            }
+
+            return success;
         }
     }
 }

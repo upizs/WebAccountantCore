@@ -44,6 +44,11 @@ namespace WebAccountantApp.Repository
 
         }
 
+        public async Task<IList<Account>> GetDebitAndCredit()
+        {
+           return await _db.Accounts.Where(acc => acc.AccountType == AccountType.Credit || acc.AccountType == AccountType.Debit).ToListAsync();
+        }
+
         public async Task<bool> Save()
         {
             var changes = await _db.SaveChangesAsync();

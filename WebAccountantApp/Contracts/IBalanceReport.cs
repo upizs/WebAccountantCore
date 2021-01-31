@@ -6,9 +6,7 @@ using WebAccountantApp.Data;
 
 namespace WebAccountantApp.Contracts
 {
-    public interface IAccountRepository : IBaseRepository<Account>
+    public interface IBalanceReport : IBaseRepository<BalanceReport>
     {
-        Task<IList<Account>> GetDebitAndCredit();
-
     }
 }

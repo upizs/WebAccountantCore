@@ -18,30 +18,30 @@ namespace WebAccountantApp.Repository
 
         public async Task<bool> Create(DateKeeper entity)
         {
-            await _db.DateKeepers.AddAsync(entity);
+            await _db.AddAsync(entity);
             return await Save();
         }
 
         public async Task<bool> Delete(DateKeeper entity)
         {
-            _db.DateKeepers.Remove(entity);
+            _db.DateKeeper.Remove(entity);
             return await Save();
         }
 
         public async Task<bool> Exists(int id)
         {
-            var exist = await _db.DateKeepers.AnyAsync(account => account.Id == id);
+            var exist = await _db.DateKeeper.AnyAsync(account => account.Id == id);
             return exist;
         }
 
         public async Task<IList<DateKeeper>> FindAll()
         {
-            return await _db.DateKeepers.ToListAsync();
+            return await _db.DateKeeper.ToListAsync();
         }
 
         public async Task<DateKeeper> FindById(int? id)
         {
-            return await _db.DateKeepers.SingleOrDefaultAsync(acc => acc.Id == id);
+            return await _db.DateKeeper.SingleOrDefaultAsync(acc => acc.Id == id);
         }
 
         public async Task<bool> Save()
@@ -52,7 +52,7 @@ namespace WebAccountantApp.Repository
 
         public async Task<bool> Update(DateKeeper entity)
         {
-            _db.DateKeepers.Update(entity);
+            _db.DateKeeper.Update(entity);
             return await Save();
         }
     }

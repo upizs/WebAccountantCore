@@ -90,7 +90,8 @@ namespace WebAccountantApp.Controllers
             return View(nameof(Index), reportViewModel);
         }
 
-
+        //Maybe could make this faster by providing already sorted accounts like (expenseAccount && incomeAccounts)
+        //Instead of giving accountType I could just give sorted accounts check the type in method and act accordingly
         private List<ReportVM> CreateReports(AccountType accountType, IList<Transaction> transactions, IList<Account> accounts)
         {
             var reports = new List<ReportVM>();

@@ -51,12 +51,16 @@ namespace WebAccountantApp.BusinessLogic
             //created a variable to keep async bool returns, set it to false just in case the code doesnt work, will return false
             bool success = false;
             var accounts = await accountRepo.GetDebitAndCredit();
+            //Because the record is happening in the new month any first day the app is accessed, but
+            //the report needs to be for the end of the last month. So the date is last months date. 
+            var lastMonthsDate = DateTime.Now.AddMonths(-1);
+
             foreach (var acc in accounts)
             {
                 var balanceReport = new BalanceReport
                 {
                     AccountId = acc.Id,
-                    Date = DateTime.Now.Date,
+                    Date = lastMonthsDate,
                     Value = acc.Value
                 };
                 success = await balanceRepo.Create(balanceReport);

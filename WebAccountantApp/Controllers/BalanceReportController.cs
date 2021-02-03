@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAccountantApp.Contracts;
+using WebAccountantApp.Data;
+using WebAccountantApp.Models;
 
 namespace WebAccountantApp.Controllers
 {
@@ -21,11 +23,43 @@ namespace WebAccountantApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var balanceReports = await _balanceRepo.FindAll();
-            //will use the same archive method like in Reports
-            //Index will show the last month. Can choose to see other months
-            //Also need a view with chart that is comparing the months. 
-            return View();
+            var archivedBalanceReports = await ArchiveReports();
+            var todaysDate = DateTime.Now;
+
+            var lastMonthsBalanceReport = await _balanceRepo.GetBalanceReportByMonth(todaysDate.Month - 1, todaysDate.Year);
+
+            var mappedReports = _mapper.Map<List<BalanceReportVM>>(lastMonthsBalanceReport);
+
+            var model = new ListBalanceReportVM
+            {
+                BalanceReports = mappedReports,
+                Archives = archivedBalanceReports
+            };
+
+            return View(model);
         }
+
+        private async Task<List<ArchiveEntry>> ArchiveReports()
+        {
+            var balanceReports = await _balanceRepo.FindAll();
+
+            var archived = balanceReports.GroupBy(x => new
+            {
+                Month = x.Date.Month,
+                Year = x.Date.Year
+            })
+                //create new archive entry for each group
+                .Select(o => new ArchiveEntry
+                {
+                    Month = o.Key.Month,
+                    Year = o.Key.Year
+                })
+                .OrderByDescending(a => a.Year)
+                .ThenByDescending(a => a.Month)
+                .ToList();
+
+            return archived;
+        }
+
     }
 }

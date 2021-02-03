@@ -1,0 +1,41 @@
+﻿@model WebAccountantApp.Models.ListBalanceReportVM
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Balance Report for </h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BalanceReports.Single().Account)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BalanceReports.Single().Value)
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.BalanceReports) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Account.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value)
+            </td>
+            
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

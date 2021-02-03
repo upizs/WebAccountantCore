@@ -8,5 +8,7 @@ namespace WebAccountantApp.Contracts
 {
     public interface IBalanceReport : IBaseRepository<BalanceReport>
     {
+        Task<IList<BalanceReport>> GetBalanceReportByMonth(int month, int year);
+
     }
 }

@@ -14,6 +14,7 @@ namespace WebAccountantApp.Mapping
         {
             CreateMap<Account, AccountVM>().ReverseMap();
             CreateMap<Transaction, TransactionVM>().ReverseMap();
+            CreateMap<BalanceReport, BalanceReportVM>().ReverseMap();
         }
     }
 }

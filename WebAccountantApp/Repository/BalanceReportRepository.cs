@@ -44,6 +44,12 @@ namespace WebAccountantApp.Repository
             return await _db.BalanceReports.SingleOrDefaultAsync(acc => acc.Id == id);
         }
 
+        public async Task<IList<BalanceReport>> GetBalanceReportByMonth(int month, int year)
+        {
+            var reports = await _db.BalanceReports.Where(report => report.Date.Month == month && report.Date.Year == year).ToListAsync();
+            return reports;
+        }
+
         public async Task<bool> Save()
         {
             var changes = await _db.SaveChangesAsync();

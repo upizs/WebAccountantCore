@@ -36,7 +36,7 @@ namespace WebAccountantApp.Repository
 
         public async Task<IList<BalanceReport>> FindAll()
         {
-            return await _db.BalanceReports.ToListAsync();
+            return await _db.BalanceReports.Include(report => report.Account).ToListAsync();
         }
 
         public async Task<BalanceReport> FindById(int? id)
@@ -46,7 +46,7 @@ namespace WebAccountantApp.Repository
 
         public async Task<IList<BalanceReport>> GetBalanceReportByMonth(int month, int year)
         {
-            var reports = await _db.BalanceReports.Where(report => report.Date.Month == month && report.Date.Year == year).ToListAsync();
+            var reports = await _db.BalanceReports.Include(report => report.Account).Where(report => report.Date.Month == month && report.Date.Year == year).ToListAsync();
             return reports;
         }
 

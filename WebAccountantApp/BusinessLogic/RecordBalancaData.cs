@@ -27,6 +27,7 @@ namespace WebAccountantApp.BusinessLogic
                 if(lastVisit.LastStarted.GetValueOrDefault().Month != todaysDate.Month)
                 {
                     success = RecordBalance(balanceRepo, accountRepo).Result;
+                    lastVisit.LastStarted = todaysDate;
                     success = dateKeeper.Update(lastVisit).Result;
 
                 }

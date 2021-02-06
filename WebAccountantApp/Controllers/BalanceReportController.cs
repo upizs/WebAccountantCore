@@ -26,17 +26,62 @@ namespace WebAccountantApp.Controllers
             var archivedBalanceReports = await ArchiveReports();
             var todaysDate = DateTime.Now;
 
-            var lastMonthsBalanceReport = await _balanceRepo.GetBalanceReportByMonth(todaysDate.Month - 1, todaysDate.Year);
 
-            var mappedReports = _mapper.Map<List<BalanceReportVM>>(lastMonthsBalanceReport);
+            var lastMonthsBalanceReports = await _balanceRepo.GetBalanceReportByMonth(todaysDate.Month - 1, todaysDate.Year);
+            
+            var mappedReports = _mapper.Map<List<BalanceReportVM>>(lastMonthsBalanceReports);
+            //create separete lists for debit and credit, so I can have a better view of my accounts
+            List<BalanceReportVM> debitReports = new List<BalanceReportVM>();
+            List<BalanceReportVM> creditReports = new List<BalanceReportVM>();
+
+            foreach (var report in mappedReports)
+            {
+                if (report.Account.AccountType == AccountType.Debit)
+                    debitReports.Add(report);
+                else
+                    creditReports.Add(report);
+            }
 
             var model = new ListBalanceReportVM
             {
-                BalanceReports = mappedReports,
+                DebitBalanceReports = debitReports,
+                CreditBalanceReports = creditReports,
                 Archives = archivedBalanceReports
             };
 
             return View(model);
+        }
+
+        public async Task<IActionResult> ReportByMonth(int year, int month)
+        {
+            var archivedBalanceReports = await ArchiveReports();
+
+            var lastMonthsBalanceReports = await _balanceRepo.GetBalanceReportByMonth(month, year);
+
+
+            var mappedReports = _mapper.Map<List<BalanceReportVM>>(lastMonthsBalanceReports);
+
+            //create separete lists for debit and credit, so I can have a better view of my accounts
+            List<BalanceReportVM> debitReports = new List<BalanceReportVM>();
+            List<BalanceReportVM> creditReports = new List<BalanceReportVM>();
+
+            foreach (var report in mappedReports)
+            {
+                if (report.Account.AccountType == AccountType.Debit)
+                    debitReports.Add(report);
+                else
+                    creditReports.Add(report);
+            }
+
+
+            var model = new ListBalanceReportVM
+            {
+                DebitBalanceReports = debitReports,
+                CreditBalanceReports = creditReports,
+                Archives = archivedBalanceReports
+            };
+
+            return View("Index",model);
         }
 
         private async Task<List<ArchiveEntry>> ArchiveReports()

@@ -4,38 +4,116 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Balance Report for </h1>
+<h1>Balance Report for @Model.MonthName</h1>
 
+@if (Model.Archives != null)
+{
+    <nav class="navbar navbar-expand navbar-white navbar-light">
+        @*Left navbar links*@
+        <ul class="navbar-nav">
+            
+            @foreach (var group in Model.Archives.GroupBy(m => m.Year))
+            {
+                <li class="nav-item dropwdown d-none d-sm-inline-block ">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                        @group.Key
+                        <span class="caret"></span>
+                    </a>
+
+                    <ul class="dropdown-menu">
+                        @foreach (var item in group)
+                        {
+                            <li class="dropdown-item">
+                                <a class="nav-link" asp-action="ReportByMonth" asp-route-year="
+                               @item.Year" asp-route-month="@item.Month">@item.MonthName</a>
+
+                        </li>
+                    }
+                    </ul>
+                </li>
+            }
+
+
+        </ul>
+    </nav>
+}
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.BalanceReports.Single().Account)
+                @Html.DisplayNameFor(model => model.DebitBalanceReports.Single().Account)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.BalanceReports.Single().Value)
+                @Html.DisplayNameFor(model => model.DebitBalanceReports.Single().Value)
             </th>
-            
-            <th></th>
+
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.BalanceReports) {
+
+        @foreach (var item in Model.DebitBalanceReports)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+            <tr style="@(Model.TotalDebitValue < 0 ? "bg-danger" : "bg-success" )">
+                <td>@Html.DisplayNameFor(model => model.TotalDebitValue)</td>
+                <td>@Html.DisplayFor(model => model.TotalDebitValue)</td>
+            </tr>
+
+        </tbody>
+</table>
+
+<table class="table">
+    <thead>
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Account.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Value)
-            </td>
-            
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.CreditBalanceReports.Single().Account)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreditBalanceReports.Single().Value)
+            </th>
+
+            <th>Actions</th>
         </tr>
-}
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.CreditBalanceReports)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+        <tr style="@(Model.TotalCreditValue < 0 ? "danger" : "success" )">
+            <td>@Html.DisplayNameFor(model => model.TotalCreditValue)</td>
+            <td>@Html.DisplayFor(model => model.TotalCreditValue)</td>
+        </tr>
+
     </tbody>
 </table>

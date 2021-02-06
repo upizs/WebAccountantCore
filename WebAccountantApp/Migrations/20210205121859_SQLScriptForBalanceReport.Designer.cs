@@ -10,8 +10,8 @@ using WebAccountantApp.Data;
 namespace WebAccountantApp.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20210131081724_ChangedDateKeeperName")]
-    partial class ChangedDateKeeperName
+    [Migration("20210205121859_SQLScriptForBalanceReport")]
+    partial class SQLScriptForBalanceReport
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -14,6 +14,7 @@ namespace WebAccountantApp.Controllers
     {
         private readonly IBalanceReport _balanceRepo;
         private readonly IMapper _mapper;
+        
 
         public BalanceReportController(IMapper mapper, IBalanceReport balanceReport)
         {
@@ -21,13 +22,19 @@ namespace WebAccountantApp.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? year, int? month)
         {
             var archivedBalanceReports = await ArchiveReports();
-            var todaysDate = DateTime.Now;
 
+            //I check only one parameter, because if one will be provided so will be the other. 
+            if (!year.HasValue)
+            {
+                var lastMonthDate = DateTime.Now.AddMonths(-1);
+                year = lastMonthDate.Year;
+                month = lastMonthDate.Month;
+            }
 
-            var lastMonthsBalanceReports = await _balanceRepo.GetBalanceReportByMonth(todaysDate.Month - 1, todaysDate.Year);
+            var lastMonthsBalanceReports = await _balanceRepo.GetBalanceReportByMonth(month.GetValueOrDefault(), year.GetValueOrDefault());
             
             var mappedReports = _mapper.Map<List<BalanceReportVM>>(lastMonthsBalanceReports);
             //create separete lists for debit and credit, so I can have a better view of my accounts
@@ -52,37 +59,6 @@ namespace WebAccountantApp.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> ReportByMonth(int year, int month)
-        {
-            var archivedBalanceReports = await ArchiveReports();
-
-            var lastMonthsBalanceReports = await _balanceRepo.GetBalanceReportByMonth(month, year);
-
-
-            var mappedReports = _mapper.Map<List<BalanceReportVM>>(lastMonthsBalanceReports);
-
-            //create separete lists for debit and credit, so I can have a better view of my accounts
-            List<BalanceReportVM> debitReports = new List<BalanceReportVM>();
-            List<BalanceReportVM> creditReports = new List<BalanceReportVM>();
-
-            foreach (var report in mappedReports)
-            {
-                if (report.Account.AccountType == AccountType.Debit)
-                    debitReports.Add(report);
-                else
-                    creditReports.Add(report);
-            }
-
-
-            var model = new ListBalanceReportVM
-            {
-                DebitBalanceReports = debitReports,
-                CreditBalanceReports = creditReports,
-                Archives = archivedBalanceReports
-            };
-
-            return View("Index",model);
-        }
 
         private async Task<List<ArchiveEntry>> ArchiveReports()
         {

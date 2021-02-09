@@ -49,12 +49,15 @@ namespace WebAccountantApp.Controllers
                 transaction.Date = DateTime.Now;
                 var mappedTransaction = _mapper.Map<Transaction>(transaction);
                 var success = await _transactionRepo.Create(mappedTransaction);
+                if (!success)
+                    throw new Exception("Failed to create transaction");
 
                 //Get and update account values
                 var accountDebited = await _accountRepo.FindById(transaction.DebitId);
                 var accountCredited = await _accountRepo.FindById(transaction.CreditId);
 
                 var success2 = await UpdateAccounts(accountDebited, accountCredited, transaction.Value);
+                
 
                 
                 return RedirectToAction(nameof(Index));
@@ -103,6 +106,8 @@ namespace WebAccountantApp.Controllers
             else
                 accountDebited.Value -= value;
             var success = await _accountRepo.Update(accountDebited);
+            if (!success)
+                throw new Exception("Failed to update Account " + accountDebited.Name);
 
             //Update Credited Account, Credit account gains value when credited and Income gains value.
             if (accountCredited.AccountType == AccountType.Credit || accountCredited.AccountType == AccountType.Income)
@@ -111,7 +116,9 @@ namespace WebAccountantApp.Controllers
                 accountCredited.Value -= value;
 
             var success1 = await _accountRepo.Update(accountCredited);
-            
+            if (!success1)
+                throw new Exception("Failed to update Account " + accountCredited.Name);
+
             return (success && success1);
 
         } 

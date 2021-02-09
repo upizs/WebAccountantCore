@@ -15,6 +15,10 @@ using WebAccountantApp.Data;
 using WebAccountantApp.Mapping;
 using WebAccountantApp.Repository;
 using WebAccountantApp.BusinessLogic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Diagnostics;
+using System.Net;
+using System.Text;
 
 namespace WebAccountantApp
 {
@@ -54,16 +58,18 @@ namespace WebAccountantApp
             IBalanceReport balanceRepo,
             IAccountRepository accountRepo)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //}
+            //else
+            //{
+            //    app.UseExceptionHandler("/Home/Error");
+            //    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            //    app.UseHsts();
+            //}
+            app.UseExceptionHandler("/error");
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

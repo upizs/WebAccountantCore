@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAccountantApp.Contracts;
@@ -60,6 +62,47 @@ namespace WebAccountantApp.Controllers
         }
 
 
+        public async Task<IActionResult> Charts()
+        {
+            Random r = new Random();
+
+            var balanceReports = await _balanceRepo.FindAll();
+
+            var mappedReports = _mapper.Map<List<BalanceReportVM>>(balanceReports);
+            var groupedReports = mappedReports.GroupBy(x => new
+            {
+                Month = x.Date.Month,
+                Year = x.Date.Year
+            });
+
+            var datasets = new List<ChartObject>();
+            
+            foreach (var month in groupedReports)
+            {
+                var chartObject = new ChartObject
+                {
+                    Label = GetMonthName(month.Key.Month) + " " + month.Key.Year,
+                    Data = month.Select(report => report.Value).ToArray(),
+                    BackgroundColor = "rgba" + (r.Next(0, 256), r.Next(0, 256), r.Next(0, 256), 1).ToString()
+                };
+                datasets.Add(chartObject);
+            }
+
+            var chartViewModel = new ChartVM
+            {
+                Labels = groupedReports.FirstOrDefault().Select(x => x.Account.Name).ToArray(),
+                Datasets = datasets.ToArray()
+            };
+
+
+            return View(chartViewModel);
+        }
+
+        public string GetMonthName(int month)
+        {
+            return CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month);
+        }
+
         private async Task<List<ArchiveEntry>> ArchiveReports()
         {
             var balanceReports = await _balanceRepo.FindAll();
@@ -81,6 +124,5 @@ namespace WebAccountantApp.Controllers
 
             return archived;
         }
-
     }
 }

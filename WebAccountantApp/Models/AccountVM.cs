@@ -26,6 +26,33 @@ namespace WebAccountantApp.Models
     {
         public AccountVM Account { get; set; }
         public List<AccountType> AccountTypes { get; set; }
+
+    }
+    public class AccountsVM
+    {
+        [Display(Name = "Expense and Income Accounts")]
+        public List<AccountVM> ExpenseAndIncomeAccounts;
+        [Display(Name = "Credit Accounts")]
+        public List<AccountVM> CreditAccounts;
+        [Display(Name = "Debit Accounts")]
+        public List<AccountVM> DebitAccounts;
+        [Display(Name = "Total")]
+        public double TotalCreditValue
+        {
+            get
+            {
+                return this.CreditAccounts.Select(x => x.Value).Sum();
+            }
+        }
+        [Display(Name = "Total")]
+
+        public double TotalDebitValue
+        {
+            get
+            {
+                return this.DebitAccounts.Select(x => x.Value).Sum();
+            }
+        }
         
 
     }

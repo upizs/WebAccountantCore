@@ -51,7 +51,8 @@ namespace WebAccountantApp.BusinessLogic
         {
             //created a variable to keep async bool returns, set it to false just in case the code doesnt work, will return false
             bool success = false;
-            var accounts = await accountRepo.GetDebitAndCredit();
+            //I record onyl Crdit and Debit account balances because only their balances matter. 
+            var accounts = await accountRepo.GetAccountByTwoTypes(AccountType.Credit, AccountType.Debit);
             //Because the record is happening in the new month any first day the app is accessed, but
             //the report needs to be for the end of the last month. So the date is last months date. 
             var lastMonthsDate = DateTime.Now.AddMonths(-1);

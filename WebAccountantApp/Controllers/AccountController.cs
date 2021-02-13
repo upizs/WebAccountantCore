@@ -30,8 +30,23 @@ namespace WebAccountantApp.Controllers
 		// GET: AccountController
 		public async Task<ActionResult> Index()
 		{
-			var accounts = await _accountRepo.FindAll();
-			var model = _mapper.Map<List<AccountVM>>(accounts);
+			
+			var debitAccounts = await _accountRepo.GetAccountByType(AccountType.Debit);
+			var creditAccounts = await _accountRepo.GetAccountByType(AccountType.Credit);
+			var incomeAndExpenseAccounts = await _accountRepo.GetAccountByTwoTypes(AccountType.Expense, AccountType.Income);
+
+			var mappedDebitAccounts = _mapper.Map<List<AccountVM>>(debitAccounts);
+			var mappedCreditAccounts = _mapper.Map<List<AccountVM>>(creditAccounts);
+			var mappedIncomeExpenseAccounts = _mapper.Map<List<AccountVM>>(incomeAndExpenseAccounts);
+
+
+			var model = new AccountsVM
+			{
+				CreditAccounts = mappedCreditAccounts,
+				DebitAccounts = mappedDebitAccounts,
+				ExpenseAndIncomeAccounts = mappedIncomeExpenseAccounts
+
+			};
 
 			return View(model);
 		}

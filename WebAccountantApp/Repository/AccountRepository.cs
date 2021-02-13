@@ -44,10 +44,17 @@ namespace WebAccountantApp.Repository
 
         }
 
-        public async Task<IList<Account>> GetDebitAndCredit()
+        public async Task<IList<Account>> GetAccountByTwoTypes(AccountType type1, AccountType type2)
         {
-           return await _db.Accounts.Where(acc => acc.AccountType == AccountType.Credit || acc.AccountType == AccountType.Debit).ToListAsync();
+           return await _db.Accounts.Where(acc => acc.AccountType == type1 || acc.AccountType == type2).ToListAsync();
+
         }
+
+        public async Task<IList<Account>> GetAccountByType(AccountType type)
+        {
+            return await _db.Accounts.Where(acc => acc.AccountType == type).ToListAsync();
+        }
+
 
         public async Task<bool> Save()
         {

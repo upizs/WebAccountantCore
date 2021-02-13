@@ -8,7 +8,8 @@ namespace WebAccountantApp.Contracts
 {
     public interface IAccountRepository : IBaseRepository<Account>
     {
-        Task<IList<Account>> GetDebitAndCredit();
+        Task<IList<Account>> GetAccountByTwoTypes(AccountType type1, AccountType type2);
+        Task<IList<Account>> GetAccountByType(AccountType type);
 
     }
 }

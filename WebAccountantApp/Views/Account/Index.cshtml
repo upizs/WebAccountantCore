@@ -1,4 +1,4 @@
-﻿@model IEnumerable<WebAccountantApp.Models.AccountVM>
+﻿@model WebAccountantApp.Models.AccountsVM
 
 @{
     ViewData["Title"] = "Index";
@@ -7,25 +7,22 @@
 @await Component.InvokeAsync("CreateAccount")
 
 
-
-<table id="tblData" class=" table">
+<h3>Debit Accounts</h3>
+<table class=" table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.DebitAccounts.Single().Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Value)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AccountType)
+                @Html.DisplayNameFor(model => model.DebitAccounts.Single().Value)
             </th>
             <th>Actions</th>
         </tr>
     </thead>
 
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.DebitAccounts)
         {
             <tr>
                 <td>
@@ -34,9 +31,95 @@
                 <td>
                     @Math.Round(item.Value, 2)
                 </td>
+
                 <td>
-                    @item.AccountType
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id"
+                       onclick="return confirm('Are you sure you want to delete this account?')">
+                        Delete
+                    </a>
                 </td>
+            </tr>
+        }
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.TotalDebitValue)</td>
+            <td>@Math.Round(Model.TotalDebitValue)</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<h3>Credit Accounts</h3>
+
+<table class=" table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CreditAccounts.Single().Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreditAccounts.Single().Value)
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model.CreditAccounts)
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @Math.Round(item.Value, 2)
+                </td>
+
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id"
+                       onclick="return confirm('Are you sure you want to delete this account?')">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.TotalCreditValue)</td>
+            <td>@Math.Round(Model.TotalCreditValue)</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Income and Expense Accounts</h3>
+
+<table id="tblData" class=" table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ExpenseAndIncomeAccounts.Single().Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExpenseAndIncomeAccounts.Single().Value)
+            </th>
+
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model.ExpenseAndIncomeAccounts)
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @Math.Round(item.Value, 2)
+                </td>
+
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

@@ -4,6 +4,22 @@
     ViewData["Title"] = "Index";
 }
 
+<style>
+        @*If debit account is being debited means its an income*@
+        tr#transactions[data-content="@WebAccountantApp.Data.AccountType.Debit"] {
+            background-color: #C1FEBA;
+        }
+        @*If credit account is being debited means a loan is being paid, good thing*@
+        tr#transactions[data-content="@WebAccountantApp.Data.AccountType.Credit"] {
+            background-color: #CDFDF4;
+        }
+        @*If expense account is being debited then its an expense, obvios*@
+        tr#transactions[data-content="@WebAccountantApp.Data.AccountType.Expense"] {
+            background-color: #FFB3AA;
+        }
+
+</style>
+
 
 @await Component.InvokeAsync("CreateTransaction")
 
@@ -29,7 +45,7 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
+            <tr id="transactions" data-content="@item.Debit.AccountType">
                 <td>
                     @Html.DisplayFor(modelItem => item.Date)
                 </td>
@@ -43,8 +59,6 @@
                     @Html.DisplayFor(modelItem => item.Value)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id" onclick="return confirm('Are you sure you want to delete this transaction?')">Delete</a>
                 </td>
             </tr>

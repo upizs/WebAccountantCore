@@ -34,7 +34,6 @@
 
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id"
                        onclick="return confirm('Are you sure you want to delete this account?')">
                         Delete
@@ -42,10 +41,11 @@
                 </td>
             </tr>
         }
-        <tr>
-            <td>@Html.DisplayNameFor(model => model.TotalDebitValue)</td>
-            <td>@Math.Round(Model.TotalDebitValue)</td>
-        </tr>
+    <tr class="@(Model.TotalDebitValue < 0 ? "bg-danger" : "bg-success" )">
+        <td>@Html.DisplayNameFor(model => model.TotalDebitValue)</td>
+        <td>@Math.Round(Model.TotalDebitValue, 2)</td>
+        <td></td>
+    </tr>
     </tbody>
 </table>
 
@@ -78,7 +78,6 @@
 
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id"
                        onclick="return confirm('Are you sure you want to delete this account?')">
                         Delete
@@ -86,9 +85,10 @@
                 </td>
             </tr>
         }
-        <tr>
+        <tr class="@(Model.TotalDebitValue > 0 ? "bg-danger" : "bg-success" )">
             <td>@Html.DisplayNameFor(model => model.TotalCreditValue)</td>
-            <td>@Math.Round(Model.TotalCreditValue)</td>
+            <td>@Math.Round(Model.TotalCreditValue,2)</td>
+            <td></td>
         </tr>
     </tbody>
 </table>
@@ -121,8 +121,7 @@
                 </td>
 
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>  |
                     <a asp-action="Delete" asp-route-id="@item.Id"
                        onclick="return confirm('Are you sure you want to delete this account?')">
                         Delete

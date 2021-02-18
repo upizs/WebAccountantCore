@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAccountantApp.Contracts;
@@ -47,11 +48,13 @@ namespace WebAccountantApp.Controllers
             //This is for the weekly report, only available for this week for now
             var thisWeeksTransactions = await _transactionRepo.FilterTransacations(lastFridayDate);
 
+            var expenseAccounts = await _accountRepo.GetAccountByType(AccountType.Expense);
+            var incomeAccounts = await _accountRepo.GetAccountByType(AccountType.Income);
             
 
             //Create this weeks reports 
-            var thisWeeksExpenseReports = CreateReports(AccountType.Expense, thisWeeksTransactions, accounts);
-            var thisWeeksIncomeReports = CreateReports(AccountType.Income, thisWeeksTransactions, accounts);
+            var thisWeeksExpenseReports = CreateReports(AccountType.Expense, thisWeeksTransactions, expenseAccounts);
+            var thisWeeksIncomeReports = CreateReports(AccountType.Income, thisWeeksTransactions, incomeAccounts);
 
 
             //create a report viewModel
@@ -74,8 +77,11 @@ namespace WebAccountantApp.Controllers
 
             var monthlyTransactions = await _transactionRepo.GetMontlyTransactions(month, year);
 
-            var monthlyExpenseReports = CreateReports(AccountType.Expense, monthlyTransactions, accounts);
-            var montlyIncomeReports = CreateReports(AccountType.Income, monthlyTransactions, accounts);
+            var expenseAccounts = await _accountRepo.GetAccountByType(AccountType.Expense);
+            var incomeAccounts = await _accountRepo.GetAccountByType(AccountType.Income);
+
+            var monthlyExpenseReports = CreateReports(AccountType.Expense, monthlyTransactions, expenseAccounts);
+            var montlyIncomeReports = CreateReports(AccountType.Income, monthlyTransactions, incomeAccounts);
 
             var reportViewModel = new ListReportVM()
             {
@@ -90,36 +96,90 @@ namespace WebAccountantApp.Controllers
             return View(nameof(Index), reportViewModel);
         }
 
-        //Maybe could make this faster by providing already sorted accounts like (expenseAccount && incomeAccounts)
-        //Instead of giving accountType I could just give sorted accounts check the type in method and act accordingly
+        //TODO Charts for Transactions (expense and income)
+        //TODO Charts for Expense - Income difference by months.
+        public async Task<ActionResult> Charts()
+        {
+            Random r = new Random();
+
+            var transactions = await _transactionRepo.FindAll();
+            var expenseAccounts = await _accountRepo.GetAccountByType(AccountType.Expense);
+            var groupedReports = transactions.GroupBy(x => new
+            {
+                Month = x.Date.Month,
+                Year = x.Date.Month
+            }).Select(group => CreateReports(AccountType.Expense, group.ToList(), expenseAccounts));
+
+
+            var datasets = new List<ChartObject>();
+
+            foreach (var group in groupedReports)
+            {
+                var chartObject = new ChartObject
+                {
+                    Label = GetMonthName(group.FirstOrDefault().Month) + " " + group.FirstOrDefault().Year,
+                    Data = group.Select(report => report.Value).ToArray(),
+                    BackgroundColor = "rgba" + (r.Next(0, 256), r.Next(0, 256), r.Next(0, 256), 1).ToString()
+                };
+                datasets.Add(chartObject);
+            }
+
+            var chartViewModel = new ChartVM
+            {
+                Labels = groupedReports.FirstOrDefault().Select(x => x.Account.Name).ToArray(),
+                Datasets = datasets.ToArray()
+            };
+
+            return View(chartViewModel);
+        }
+
+        //Made this faster by providing already sorted accounts like (expenseAccounts && incomeAccounts)
         private List<ReportVM> CreateReports(AccountType accountType, IList<Transaction> transactions, IList<Account> accounts)
         {
             var reports = new List<ReportVM>();
             foreach (var acc in accounts)
             {
-                var isRightType = acc.AccountType == accountType;
+               
                 var thisAccountTransactions = new List<Transaction>();
 
                 //Find all transactions for this account in given list
-                //If Account Type is Expense then we are looking for accounts debited, because Expense can be Expense only when debited, if credited means it would be a refund
-                //If Account Type is Income then we are looking for account credited, becayse Income can only be Credited. 
+                //Looking for transactions where Debit id is Expense acc id, becuase Expense is being debited
+                //and Income is being Credited in normal transaction.
                 if (accountType == AccountType.Expense)
                     thisAccountTransactions = transactions.Where(x => x.DebitId == acc.Id).ToList();
                 else if (accountType == AccountType.Income)
                     thisAccountTransactions = transactions.Where(x => x.CreditId == acc.Id).ToList();
 
                 //if is rights account type and has transactions in given period, create report model for it
-                if (isRightType && thisAccountTransactions.Any())
+                if ( thisAccountTransactions.Any())
                 {
                     var report = new ReportVM();
                     report.Account = acc;
                     //sum the value of transactions for this account
                     report.Value += thisAccountTransactions.Select(x => x.Value).Sum();
+                    report.Month = thisAccountTransactions.FirstOrDefault().Date.Month;
+                    report.Year = thisAccountTransactions.FirstOrDefault().Date.Year;
+                    reports.Add(report);
+                }
+                else
+                //Create a report object with zero value so I can still show it in charts. Otherwise the report for some months would exist
+                //and that would ruin data sequence for charts.
+                //TODO however this is useless and takes power for Report index and montly report (Need condition that only does this for charts)
+                {
+                    var report = new ReportVM
+                    {
+                        Account = acc,
+                        Month = transactions.FirstOrDefault().Date.Month,
+                        Year = transactions.FirstOrDefault().Date.Year,
+                        Value = 0
+                    };
                     reports.Add(report);
                 }
             }
             return reports;
         }
+
+
 
         
 
@@ -154,6 +214,11 @@ namespace WebAccountantApp.Controllers
             }
 
             return date;
+        }
+
+        public string GetMonthName(int month)
+        {
+            return CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month);
         }
 
     }

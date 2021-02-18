@@ -39,7 +39,8 @@ namespace WebAccountantApp.Controllers
         }
 
         
-
+        // TODO Subtransaction option, when if added another transaction under current would split the sum and place the values in correct accounts
+        // EXAMPLE When spent 25 on groceries, but 5 of that was for sweets, then subtransaction would take those 5 out of total and add to sweets automatically.
         public async Task<ActionResult> Add(CreateTransactionVM model)
         {
             try
@@ -97,7 +98,7 @@ namespace WebAccountantApp.Controllers
             }
 
         }
-
+        //TODO need to find out why and how to add value to data and keeping the decimals at the same point and to find out how to fix already long decimals.
         public async Task<bool> UpdateAccounts(Account accountDebited, Account accountCredited, double value)
         {
             if (accountDebited.AccountType == AccountType.Debit || accountDebited.AccountType == AccountType.Expense)

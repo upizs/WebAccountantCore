@@ -49,11 +49,15 @@ namespace WebAccountantApp.Repository
             return await _db.Transactions.SingleOrDefaultAsync(tr => tr.Id == id);
         }
 
+        
+
         public async Task<IList<Transaction>> GetMontlyTransactions(int month, int year)
         {
             var montlyTransactions = await _db.Transactions.Where(x => x.Date.Year == year && x.Date.Month == month).ToListAsync();
             return montlyTransactions;
         }
+
+       
 
         public async Task<bool> Save()
         {

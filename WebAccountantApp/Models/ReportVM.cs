@@ -15,6 +15,8 @@ namespace WebAccountantApp.Models
 
         public Account Account { get; set; }
         public double Value { get; set; }
+        public int Month { get; set; }
+        public int Year { get; set; }
     }
 
     //A view model for a whole report page

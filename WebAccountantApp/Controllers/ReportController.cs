@@ -100,37 +100,128 @@ namespace WebAccountantApp.Controllers
         //TODO Charts for Expense - Income difference by months.
         public async Task<ActionResult> Charts()
         {
+            //random instance for creating color codes for charts
             Random r = new Random();
 
+            //All transactions to split for charts
             var transactions = await _transactionRepo.FindAll();
+
+            //get all the expense and income accounts separetly
             var expenseAccounts = await _accountRepo.GetAccountByType(AccountType.Expense);
-            var groupedReports = transactions.GroupBy(x => new
+            var incomeAccounts = await _accountRepo.GetAccountByType(AccountType.Income);
+
+            //Create and group by months expense and income reports 
+            var groupedExpenseReports = transactions.GroupBy(x => new
             {
                 Month = x.Date.Month,
                 Year = x.Date.Month
             }).Select(group => CreateReports(AccountType.Expense, group.ToList(), expenseAccounts));
 
+            var groupedIncomeReports = transactions.GroupBy(x => new
+            {
+                Month = x.Date.Month,
+                Year = x.Date.Month
+            }).Select(group => CreateReports(AccountType.Income, group.ToList(), incomeAccounts));
 
-            var datasets = new List<ChartObject>();
+            //Created grouped by months Totals of Expenses and Income 
+            var groupedTotalExpense = groupedExpenseReports.Select(x => x.Select(b => b.Value).Sum());
+            var groupedTotalIncome = groupedIncomeReports.Select(x => x.Select(b => b.Value).Sum());
 
-            foreach (var group in groupedReports)
+            //TODO: create chartObjects with totals and difference
+            var totalExpenseChartObject = new ChartObject 
+            {
+                BackgroundColor = ConsoleColor.Red.ToString(),
+                Data = groupedTotalExpense.Select(c => c).ToArray(),
+                Label = "Total Expense"
+
+            };
+            var totalIncomeChartObject = new ChartObject
+            {
+                BackgroundColor = ConsoleColor.Green.ToString(),
+                Data = groupedTotalIncome.Select(c => c).ToArray(),
+                Label = "Total Income"
+
+            };
+            //var DifferenceChartObject = new ChartObject
+            //{
+            //    BackgroundColor = ConsoleColor.Green.ToString(),
+            //    Data = ,
+            //    Label = "Total Income"
+
+            //};
+
+
+            //create new List of ChartsObjects to collect Data
+            var expenseDatasets = new List<ChartObject>();
+            var incomeDatasets = new List<ChartObject>();
+            var profitLossDatasets = new List<ChartObject> {
+                totalIncomeChartObject,
+                totalExpenseChartObject
+                
+            };
+
+            //create ChartObjects for expense Accounts (But I create as months)
+            //I want to display each account value to stay close to each other (for better comparison).
+            foreach (var group in groupedExpenseReports)
             {
                 var chartObject = new ChartObject
                 {
+                    //I use the first object in group to find the date
                     Label = GetMonthName(group.FirstOrDefault().Month) + " " + group.FirstOrDefault().Year,
+                    //Collect all the account values in that month and out them in list
                     Data = group.Select(report => report.Value).ToArray(),
+                    //Create a random color, because the color cant hard written, the data can change.
                     BackgroundColor = "rgba" + (r.Next(0, 256), r.Next(0, 256), r.Next(0, 256), 1).ToString()
                 };
-                datasets.Add(chartObject);
+                expenseDatasets.Add(chartObject);
             }
 
-            var chartViewModel = new ChartVM
+            //The same for Income value
+            foreach (var group in groupedIncomeReports)
             {
-                Labels = groupedReports.FirstOrDefault().Select(x => x.Account.Name).ToArray(),
-                Datasets = datasets.ToArray()
+                var chartObject = new ChartObject
+                {
+                    //I use the first object in group to find the date
+                    Label = GetMonthName(group.FirstOrDefault().Month) + " " + group.FirstOrDefault().Year,
+                    //Collect all the account values in that month and out them in list
+                    Data = group.Select(report => report.Value).ToArray(),
+                    //Create a random color, because the color cant hard written, the data can change.
+                    BackgroundColor = "rgba" + (r.Next(0, 256), r.Next(0, 256), r.Next(0, 256), 1).ToString()
+                };
+                incomeDatasets.Add(chartObject);
+            }
+
+            
+
+            var expenseChartViewModel = new ChartVM
+            {
+                //I use the first group to find all the names of Accounts in the group
+                Labels = groupedExpenseReports.FirstOrDefault().Select(x => x.Account.Name).ToArray(),
+                Datasets = expenseDatasets.ToArray()
             };
 
-            return View(chartViewModel);
+            var incomeChartViewModel = new ChartVM
+            {
+                
+                Labels = groupedIncomeReports.FirstOrDefault().Select(x => x.Account.Name).ToArray(),
+                Datasets = incomeDatasets.ToArray()
+            };
+            var profitLossChartVM = new ChartVM
+            {
+                Labels = groupedExpenseReports.Select(x => GetMonthName(x.FirstOrDefault().Month) + " " + x.FirstOrDefault().Year).ToArray(),
+                Datasets = profitLossDatasets.ToArray()
+            };
+
+            var multipleChartVM = new MultipleChartsViewModel
+            {
+                ExpenseChartVM = expenseChartViewModel,
+                IncomeChartVM = incomeChartViewModel,
+                ProfitLossChart = profitLossChartVM
+                
+            };
+
+
+            return View(multipleChartVM);
         }
 
         //Made this faster by providing already sorted accounts like (expenseAccounts && incomeAccounts)

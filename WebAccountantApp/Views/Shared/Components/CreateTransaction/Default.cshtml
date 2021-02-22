@@ -6,11 +6,11 @@
 
 
 
-<form asp-action="Add">
+<form asp-action="Add" id="transactionForm">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
 
-        <div class="col-sm">
+        <div class="col-sm-3">
             <div class="form-group">
                 <label asp-for="Transaction.DebitId" class="control-label"></label>
                 <select asp-for="Transaction.DebitId" class="form-control" asp-items="ViewBag.DebitId">
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div class="col-sm">
+        <div class="col-sm-3">
             <div class="form-group">
                 <label asp-for="Transaction.CreditId" class="control-label"></label>
                 <select asp-for="Transaction.CreditId" class="form-control" asp-items="ViewBag.CreditId">
@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <div class="col-sm">
+        <div class="col-sm-3">
             <div class="form-group">
                 <label asp-for="Transaction.Value" class="control-label"></label>
                 <input asp-for="Transaction.Value" class="form-control" />
@@ -42,16 +42,19 @@
             </div>
         </div>
 
-        <div class="col-sm">
-            <hr class="invisible"/>
+        <div class="col-sm-3">
+            <hr class="invisible" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary btn-block" />
             </div>
         </div>
+    </div>
+    <div class="row">
 
-        </div>
+    </div>
+
 </form>
-
+<button class="btn " onclick="addSubTransaction(1)"><i class="nav-icon fas fa-plus-square"></i></button>
 
 <div>
     <a asp-action="Index">Back to List</a>
@@ -59,4 +62,6 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+
 }

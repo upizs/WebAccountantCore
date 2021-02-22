@@ -31,5 +31,8 @@ namespace WebAccountantApp.Models
     {
         public TransactionVM Transaction { get; set; }
         public List<AccountVM> Accounts { get; set; }
+        //if one transaction has to be divided into other accounts
+        //Example: Shopping in grocery store but sweets need to added to different account
+        public List<Transaction> SubTransactions { get; set; }
     }
 }

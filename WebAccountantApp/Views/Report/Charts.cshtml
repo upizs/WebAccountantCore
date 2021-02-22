@@ -1,8 +1,8 @@
-﻿@model WebAccountantApp.Models.ChartVM
+﻿@model WebAccountantApp.Models.MultipleChartsViewModel
 
 <div class="card card-success">
     <div class="card-header">
-        <h3 class="card-title">Bar Chart</h3>
+        <h3 class="card-title">Income Bar Chart</h3>
 
         <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -13,7 +13,47 @@
     </div>
     <div class="card-body">
         <div class="chart">
-            <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            <canvas id="IncomeBarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+        </div>
+    </div>
+    <!-- /.card-body -->
+</div>
+<!-- /.card -->
+
+<div class="card card-danger">
+    <div class="card-header">
+        <h3 class="card-title">Expense Bar Chart</h3>
+
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="chart">
+            <canvas id="ExpenseBarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+        </div>
+    </div>
+    <!-- /.card-body -->
+</div>
+<!-- /.card -->
+
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Profit or Loss Bar Chart</h3>
+
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="chart">
+            <canvas id="DifferenceBarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
         </div>
     </div>
     <!-- /.card-body -->
@@ -24,14 +64,63 @@
     <script>
         $(function () {
 
-            
-            var barChartCanvas = $('#barChart').get(0).getContext('2d')
+
+            var barChartCanvas = $('#ExpenseBarChart').get(0).getContext('2d')
             var barChartData = new Array()
-            var DataSets = @JavaScriptConvert.SerializeObject(Model.Datasets)
+            var DataSets = @JavaScriptConvert.SerializeObject(Model.ExpenseChartVM.Datasets)
 
 
 
-            barChartData.labels = @JavaScriptConvert.SerializeObject(Model.Labels)
+            barChartData.labels = @JavaScriptConvert.SerializeObject(Model.ExpenseChartVM.Labels)
+            barChartData.datasets = DataSets;
+            var barChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                datasetFill: false
+            }
+
+            var barChart = new Chart(barChartCanvas, {
+                type: 'bar',
+                data: barChartData,
+                options: barChartOptions
+            })
+
+        })
+
+        $(function () {
+
+
+            var barChartCanvas = $('#IncomeBarChart').get(0).getContext('2d')
+            var barChartData = new Array()
+            var DataSets = @JavaScriptConvert.SerializeObject(Model.IncomeChartVM.Datasets)
+
+
+
+            barChartData.labels = @JavaScriptConvert.SerializeObject(Model.IncomeChartVM.Labels)
+            barChartData.datasets = DataSets;
+            var barChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                datasetFill: false
+            }
+
+            var barChart = new Chart(barChartCanvas, {
+                type: 'bar',
+                data: barChartData,
+                options: barChartOptions
+            })
+
+        })
+        $(function () {
+
+
+            var barChartCanvas = $('#DifferenceBarChart').get(0).getContext('2d')
+            var barChartData = new Array()
+            var DataSets = @JavaScriptConvert.SerializeObject(Model.ProfitLossChart.Datasets)
+
+
+
+            barChartData.labels = @JavaScriptConvert.SerializeObject(Model.ProfitLossChart.Labels)
             barChartData.datasets = DataSets;
             var barChartOptions = {
                 responsive: true,

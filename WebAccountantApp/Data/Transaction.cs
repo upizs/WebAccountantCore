@@ -14,7 +14,8 @@ namespace WebAccountantApp.Data
         [Required]
         public int? CreditId { get; set; }
         [Required]
-        public double Value { get; set; }
+        [Column(TypeName = "decimal(20,2)")]
+        public decimal Value { get; set; }
         [Required]
         public DateTime Date { get; set; }
 

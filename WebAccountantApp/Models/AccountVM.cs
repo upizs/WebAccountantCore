@@ -15,7 +15,7 @@ namespace WebAccountantApp.Models
         [MaxLength(30)]
         public string Name { get; set; }
         [Required]
-        public double Value { get; set; }
+        public decimal Value { get; set; }
         [Required]
         [EnumDataType(typeof(AccountType))]
         [Display(Name = "Account Type")]
@@ -37,7 +37,7 @@ namespace WebAccountantApp.Models
         [Display(Name = "Debit Accounts")]
         public List<AccountVM> DebitAccounts;
         [Display(Name = "Total")]
-        public double TotalCreditValue
+        public decimal TotalCreditValue
         {
             get
             {
@@ -46,7 +46,7 @@ namespace WebAccountantApp.Models
         }
         [Display(Name = "Total")]
 
-        public double TotalDebitValue
+        public decimal TotalDebitValue
         {
             get
             {

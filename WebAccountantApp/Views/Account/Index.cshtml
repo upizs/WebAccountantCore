@@ -43,7 +43,7 @@
         }
     <tr class="@(Model.TotalDebitValue < 0 ? "bg-danger" : "bg-success" )">
         <td>@Html.DisplayNameFor(model => model.TotalDebitValue)</td>
-        <td>@Math.Round(Model.TotalDebitValue, 2)</td>
+        <td>@Model.TotalDebitValue</td>
         <td></td>
     </tr>
     </tbody>
@@ -73,7 +73,7 @@
                     @item.Name
                 </td>
                 <td>
-                    @Math.Round(item.Value, 2)
+                    @item.Value
                 </td>
 
                 <td>
@@ -87,7 +87,7 @@
         }
         <tr class="@(Model.TotalDebitValue > 0 ? "bg-danger" : "bg-success" )">
             <td>@Html.DisplayNameFor(model => model.TotalCreditValue)</td>
-            <td>@Math.Round(Model.TotalCreditValue,2)</td>
+            <td>@Model.TotalCreditValue</td>
             <td></td>
         </tr>
     </tbody>
@@ -117,7 +117,7 @@
                     @item.Name
                 </td>
                 <td>
-                    @Math.Round(item.Value, 2)
+                    @item.Value
                 </td>
 
                 <td>

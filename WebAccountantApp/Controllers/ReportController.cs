@@ -124,31 +124,39 @@ namespace WebAccountantApp.Controllers
             }).Select(group => CreateReports(AccountType.Income, group.ToList(), incomeAccounts));
 
             //Created grouped by months Totals of Expenses and Income 
-            var groupedTotalExpense = groupedExpenseReports.Select(x => x.Select(b => b.Value).Sum());
-            var groupedTotalIncome = groupedIncomeReports.Select(x => x.Select(b => b.Value).Sum());
+            var groupedTotalExpense = groupedExpenseReports.Select(x => x.Select(b => b.Value).Sum()).ToArray();
+            var groupedTotalIncome = groupedIncomeReports.Select(x => x.Select(b => b.Value).Sum()).ToArray();
 
             //TODO: create chartObjects with totals and difference
             var totalExpenseChartObject = new ChartObject 
             {
                 BackgroundColor = ConsoleColor.Red.ToString(),
-                Data = groupedTotalExpense.Select(c => c).ToArray(),
+                Data = groupedTotalExpense,
                 Label = "Total Expense"
 
             };
             var totalIncomeChartObject = new ChartObject
             {
                 BackgroundColor = ConsoleColor.Green.ToString(),
-                Data = groupedTotalIncome.Select(c => c).ToArray(),
+                Data = groupedTotalIncome,
                 Label = "Total Income"
 
             };
-            //var DifferenceChartObject = new ChartObject
-            //{
-            //    BackgroundColor = ConsoleColor.Green.ToString(),
-            //    Data = ,
-            //    Label = "Total Income"
 
-            //};
+            var profitOrLossArray = new decimal[groupedTotalExpense.Count()];
+            for (int i = 0; i< groupedTotalExpense.Count(); i++)
+            {
+                decimal profitOrLoss = groupedTotalIncome[i] - groupedTotalExpense[i];
+                profitOrLossArray[i] = profitOrLoss;
+            }
+
+            var profitOrLossChartObject = new ChartObject
+            {
+                BackgroundColor = ConsoleColor.Blue.ToString(),
+                Data = profitOrLossArray,
+                Label = "Difference"
+
+            };
 
 
             //create new List of ChartsObjects to collect Data
@@ -156,7 +164,8 @@ namespace WebAccountantApp.Controllers
             var incomeDatasets = new List<ChartObject>();
             var profitLossDatasets = new List<ChartObject> {
                 totalIncomeChartObject,
-                totalExpenseChartObject
+                totalExpenseChartObject,
+                profitOrLossChartObject
                 
             };
 

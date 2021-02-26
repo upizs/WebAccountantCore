@@ -14,7 +14,7 @@ namespace WebAccountantApp.Models
         public int Id { get; set; }
 
         public Account Account { get; set; }
-        public double Value { get; set; }
+        public decimal Value { get; set; }
         public int Month { get; set; }
         public int Year { get; set; }
     }
@@ -28,29 +28,29 @@ namespace WebAccountantApp.Models
         public IEnumerable<Account> Accounts { get; set; }
 
         [DisplayName("Total Income")]
-        public double IncomeSum
+        public decimal IncomeSum
         {
             get
             {
-                return Math.Round(this.IncomeReports.Select(x => x.Value).Sum(),2);
+                return this.IncomeReports.Select(x => x.Value).Sum();
             }
         }
         [DisplayName("Total Expense")]
-        public double ExpenseSum
+        public decimal ExpenseSum
         {
             get
             {
-                return Math.Round(this.ExpenseReports.Select(x => x.Value).Sum(),2);
+                return this.ExpenseReports.Select(x => x.Value).Sum();
             }
         }
         //Whats left after taking all the expenses from same period income
         [DisplayName("Difference")]
-        public double Diference
+        public decimal Diference
         {
             get
             {
                 //Rounded because sometimes result appears to be having more than two decimal places
-                return Math.Round(this.IncomeSum - this.ExpenseSum, 2);
+                return this.IncomeSum - this.ExpenseSum;
             }
         }
     }

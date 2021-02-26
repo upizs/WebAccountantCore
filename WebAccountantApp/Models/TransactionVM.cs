@@ -17,7 +17,7 @@ namespace WebAccountantApp.Models
         [Required]
         public int? CreditId { get; set; }
         [Required]
-        public double Value { get; set; }
+        public decimal Value { get; set; }
         
         public DateTime Date { get; set; }
 

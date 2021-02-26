@@ -14,7 +14,7 @@ namespace WebAccountantApp.Models
         [Key]
         public int Id { get; set; }
         public DateTime Date { get; set; }
-        public double Value { get; set; }
+        public decimal Value { get; set; }
         public int AccountId { get; set; }
 
         [ForeignKey(nameof(AccountId))]
@@ -25,7 +25,7 @@ namespace WebAccountantApp.Models
     {
         public List<BalanceReportVM> DebitBalanceReports { get; set; }
         [Display(Name ="Total")]
-        public double TotalDebitValue
+        public decimal TotalDebitValue
         {
             get
             {
@@ -34,7 +34,7 @@ namespace WebAccountantApp.Models
         }
         public List<BalanceReportVM> CreditBalanceReports { get; set; }
         [Display(Name = "Total")]
-        public double TotalCreditValue
+        public decimal TotalCreditValue
         {
             get
             {

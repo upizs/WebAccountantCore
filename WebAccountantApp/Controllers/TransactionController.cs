@@ -99,7 +99,7 @@ namespace WebAccountantApp.Controllers
 
         }
         //TODO need to find out why and how to add value to data and keeping the decimals at the same point and to find out how to fix already long decimals.
-        public async Task<bool> UpdateAccounts(Account accountDebited, Account accountCredited, double value)
+        public async Task<bool> UpdateAccounts(Account accountDebited, Account accountCredited, decimal value)
         {
             if (accountDebited.AccountType == AccountType.Debit || accountDebited.AccountType == AccountType.Expense)
                 accountDebited.Value += value;

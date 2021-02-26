@@ -9,6 +9,6 @@ namespace WebAccountantApp.Models
     {
         public string Label;
         public string BackgroundColor;
-        public double[] Data;
+        public decimal[] Data;
     }
 }

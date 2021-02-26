@@ -14,7 +14,8 @@ namespace WebAccountantApp.Data
         [MaxLength(30)]
         public string Name { get; set; }
         [Required]
-        public double Value { get; set; }
+        [Column(TypeName = "decimal(20,2)")]
+        public decimal Value { get; set; }
         [Required]
         [EnumDataType(typeof(AccountType))]
         public AccountType AccountType { get; set; }
